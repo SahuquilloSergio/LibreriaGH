@@ -2,15 +2,20 @@ package com.sergio.libreriagh;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
+import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GitHub;
 
@@ -103,5 +108,44 @@ public class Metodos{
             System.out.println("Error:"+ex);
         }
     }
-   
+ 
+    /**
+     * 
+     * @param url del repositorio
+     * @param repositorio nombre del repositorio 
+     * @param contrasena del usuario
+     * @param usuario de github
+     */
+    public static void push(String url, String repositorio,String contrasena,String usuario){
+        try{
+            /*Creamos un objeto de tipo FileRepositoryBuilder y le mandamos
+            * los parámetros para hacer un push del repositorio
+            *
+            */
+            FileRepositoryBuilder repositoryBuilder=new FileRepositoryBuilder();
+            Repository repository=repositoryBuilder.setGitDir(new File(repositorio))
+                    .readEnvironment()
+                    .findGitDir()
+                    .setMustExist(true)
+                    .build();
+            
+            Git git=new Git(repository);
+
+            RemoteAddCommand remoteAddCommand=git.remoteAdd();
+            remoteAddCommand.setName("origin");
+            remoteAddCommand.setUri(new URIish(url));
+            remoteAddCommand.call();
+            
+            PushCommand pushCommand=git.push();
+            pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(usuario, contrasena));
+            pushCommand.call();
+         //Recogemos la excepcion   
+        }catch(IOException ex){
+            System.out.println("Error: "+ex);
+        }catch(URISyntaxException ex){
+            System.out.println("Error: "+ex);
+        }catch(GitAPIException ex){
+            System.out.println("Error: "+ex);
+        }
+    }
 }
