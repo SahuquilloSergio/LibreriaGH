@@ -1,6 +1,11 @@
 package com.sergio.libreriagh;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GitHub;
 
@@ -30,6 +35,21 @@ public class Metodos{
             System.out.println("Error:"+ex);
         }
     }
-
+ /**
+     * Método para clonar un repositorio
+     *
+     * @param url Dirección web del repositorio
+     * @param nombre Nombre con el que se guardará el proyecto
+     */
+    public static void clonar(String url, String nombre){
+        try{
+            Git.cloneRepository()
+                    .setURI(url)
+                    .setDirectory(new File("/home/serxa/NetBeansProjects/"+nombre))
+                    .call();
+        }catch(GitAPIException ex){
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
 }
