@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GitHub;
 
@@ -50,6 +54,38 @@ public class Metodos{
         }catch(GitAPIException ex){
             Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+     /**
+     * Método para hacer un commit
+     *
+     * @param ruta Ruta del repositorio
+     * @param msn Mensaje del commit
+     */
+    public static void hacerCommit(String ruta, String msn){
+        try{
+            /*Creamos un objeto del tipo repository builder y le mandamos 
+            * los parámetros
+            */
+            
+            FileRepositoryBuilder repositoryBuilder=new FileRepositoryBuilder();
+            Repository repository=repositoryBuilder.setGitDir(new File(ruta))
+                    .readEnvironment()
+                    .findGitDir()
+                    .setMustExist(true)
+                    .build();
+
+            Git git=new Git(repository);
+            AddCommand add=git.add();
+            add.addFilepattern(ruta).call();
+            CommitCommand commit=git.commit();
+            commit.setMessage(msn).call();
+            //Recogemos la excepcion
+        }catch(IOException ex){
+            System.out.println("Error:"+ex);
+        }catch(GitAPIException ex){
+            System.out.println("Error:"+ex);
+        }
+
     }
    
 }
